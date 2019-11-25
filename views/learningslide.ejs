@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p><%=text%></p>
+        <img src = "<%=S3url%>"/>
+     <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000'" value=Home>
+     <input type=button onClick="location.href='<%=next_url%>'" value=Next>
+  </body>
+</html>

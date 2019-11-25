@@ -1,0 +1,24 @@
+{
+  "name": "nodetest1",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "start": "nodemon app.js",
+    "create-db": "cd dynamodb && node createCarsTable.js && cd ..",
+    "delete-db": "cd dynamodb && node deleteCarsTable.js && cd ..",
+    "load-data": "cd dynamodb && node loadCarData.js && cd ..", 
+    "read-data": "cd dynamodb && node readDataTest.js && cd .."
+  },
+  "dependencies": {
+    "aws-sdk": "^2.575.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dynamodb": "^1.2.1",
+    "ejs": "~2.6.1",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "monk": "^7.1.1",
+    "morgan": "~1.9.1"
+  }
+}
