@@ -65,7 +65,7 @@ textarea {
 }
 
 .divbody {
-	background-image: url('bckgrdImage.jpg');
+	background-image: url("/home/ec2-user/nodetest1/views/bckgrdImage.jpg");
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-size: cover;
@@ -75,6 +75,24 @@ textarea {
 	position:absolute;
 	top:150px;
 	left:10%; 
+}
+
+.learningmargin {
+	position:absolute;
+	top:20px;
+	left:10%; 
+}
+
+.textmargin {
+	position:absolute;
+	top:60px;
+	left:45%; 
+}
+
+.imagemargin {
+	position:absolute;
+	top:120px;
+	left:30%; 
 }
 
 .pollymargin {

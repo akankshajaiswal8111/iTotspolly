@@ -2,13 +2,24 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="/stylesheets/styles.css">
   </head>
-  <body>
+  <body class="divbody">
+    <label class="logoutPos">
+        <input type=button onClick="location.href='http://localhost:3000/pollyCourse/'" value='Logout' class="buttons"> 
+    </label>
+    <div id="learningslidePage" class="learningmargin"> 
     <h1><%= title %></h1>
-    <p><%=text%></p>
-        <img src = "<%=S3url%>"/>
-     <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000'" value=Home>
-     <input type=button onClick="location.href='<%=next_url%>'" value=Next>
+    </div>
+    <div class="textmargin">
+    <h2><%=text%></h2>
+    </div>
+    <br/><br/>
+    <div class="imagemargin">
+        <img src = "<%=S3url%>" height="400px" width="600px"/>
+        <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000'" value=Home class="buttons">
+        <input type=button onClick="location.href='<%=next_url%>'" value=Next class="buttons">
+    </div>    
+    
   </body>
 </html>

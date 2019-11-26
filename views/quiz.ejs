@@ -6,13 +6,39 @@
 </head>
 <body>
  <p><%=quiz_label_right %></p>
- <p>Identify the <%=quiz_label_right%> </p>
-<form>
+ <p id="label"> </p>
+<form name="theFormName">
   <div id="radio">
-    <input type="radio" id="radio1" name="radio"><label for="radio1"><img src=<%=rightImageURL %>  /></label></input>
-    <input type="radio" id="radio2" name="radio" checked><label for="radio2"><img src=<%=wrongImageURL %>  /></label></input>
+    <input type="radio" id="radio1" name="radiogrp" value = "10"><label for="radio1"><img src=<%= rightImageURL %> height="400" width="400" /> </label></input>
+    <input type="radio" id="radio2" name="radiogrp" value = "20"><label for="radio2"><img src=<%= wrongImageURL %> height="400" width="400" /> </label></input>
+    <br>
+    <input type="button" value = "Check" onclick="getRadioValue('radiogrp')">
   </div>
 </form>
+
+<script>
+ function getRadioValue(radiogrp) {
+    var radios = theFormName.elements[radiogrp];
+    window.rdValue;
+    for (var i=0; i<radios.length; i++) {
+                var someRadio = radios[i];
+                if (someRadio.checked) {
+                    rdValue = someRadio.value;
+                    break;
+                }
+                else rdValue = 'noRadioChecked';
+            }
+            if (rdValue == '10') {
+                alert('That is right'); // or: console.log('10')
+            }
+            else if(rdValue == '20') {
+		alert('That is wrong'); 
+            }
+            else if (rdValue == 'noRadioChecked') {
+                alert('no radio checked');
+            }
+        }
+</script>
 
 </body>
 </html>

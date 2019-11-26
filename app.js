@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var AWS = require("aws-sdk");
 var bodyParser = require('body-parser');
-var config = require('./config');
+//var config = require('./config');
 var availableLanguages = ['hindi', 'french', 'spanish', 'english']
 var port = "3000"
 var domain = "ec2-34-207-163-214.compute-1.amazonaws.com"
@@ -22,10 +22,6 @@ var app = express();
 
 app.listen(3000, () => console.log('pollyCourse API listening on port 3000!'))
 
-AWS.config.update({
-  region: "us-east-1",
-  endpoint: "http://dynamodb.us-east-1.amazonaws.com/",
-});
 var docClient = new AWS.DynamoDB.DocumentClient();
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -202,48 +198,52 @@ app.get('/learningCourse/:categories/quiz/:id', function (req, res) {
       ":id": image2ID
     }
 };
-var global = {};
-var next_url;
-var rightImageURL;
-var rightImageText;
-var wrongImageURL;
-var wrongImageText;
-var rightImageLabel;
+
 docClient.query(params1, function(err, data) {
     if (err) {
         console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
     } else {
-        console.log(data);
-        var nextSlide = parseInt(categoryNum)+1;
-        global.next_url = home_url+'/learningCourse/'+category+'/quiz_/'+nextSlide;
-        global.rightImageURL = data.Items[0].S3url;
-        global.rightImageText = data.Items[0].text;
-        global.rightImageLabel = data.Items[0].labels[0];
-//        console.log(data.Items[0].labels[0]);
-//	console.log(rightImageURL);
-    }
+    	var wrongImageData = function getWrongImageData(params, docClient){
+        docClient.query(params, function(err, data) {
+          if (err) {
+          console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+          } else {
+              console.log('here');
+              var wrongImageURL = data.Items[0].S3url;
+              var wrongImageText = data.Items[0].text;
+              console.log(wrongImageURL);
+              console.log(wrongImageText);
+              var wrongImageData1 = {wrongImageURL: wrongImageURL, wrongImageText: wrongImageText};
+              console.log(wrongImageData);
+              return wrongImageData1;
+              }
+          });
+          var nextSlide = parseInt(categoryNum)+1;
+          var next_url = home_url+'/learningCourse/'+category+'/quiz_/'+nextSlide;
+          var rightImageURL = data.Items[0].S3url;
+          console.log(rightImageURL);
+	  console.log(wrongImageData.wrongImageURL);
+          var rightImageText = data.Items[0].text;
+          var rightImageLabel = data.Items[0].labels[0];
+          console.log(rightImageLabel);
+    
+//});
+          res.render('quiz', 
+	        {	
+		title: 'quiz', 
+		quiz_label_right: rightImageLabel, 
+		rightImageURL: rightImageURL, 
+		wrongImageURL: wrongImageData.wrongImageURL, 
+		rightImageText: rightImageText, 
+		wrongImageText: wrongImageData.wrongImageText, 
+		next_url: next_url
+        	});
+	
+}
+
 });
-docClient.query(params2, function(err, data) {
-    if (err) {
-        console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
-    } else {
-//	console.log(data);
-    	global.wrongImageURL = data.Items[0].S3url;
-    	global.wrongImageText = data.Items[0].text;
-//        console.log(wrongImageURL);
-    }
 });
-//rightImage = {
-//	"url" : rightImageURL,
-//	"text" : rightImageText
-//};
-//wrongImage = {
-//	"url" : wrongImageURL,
-//	"text" : wrongImageText
-//};
-console.log(global.rightImageLabel);
-res.render('quiz', {title: 'quiz', quiz_label_right: global.rightImageLabel, rightImageURL: global.rightImageURL, wrongImageURL: global.wrongImageURL, next_url:global. next_url});
-});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

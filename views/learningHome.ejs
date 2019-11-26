@@ -2,14 +2,20 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/styles.css"/>
   </head>
-  <body>
+  <body class="divbody">
+    <label class="logoutPos">
+        <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000/pollyCourse/'" value='Logout' class="buttons"> 
+    </label>  
+    <div id="learninghomePage" class="margin"> 
     <h1><%= title %></h1>
-    <p>Welcome to Learning Course Based on Amazon Rekognition<%= title %></p>
-    <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000/learningCourse/Wildlife'" value='Wildlife'>
-    <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000/learningCourse/Reptiles'" value='Reptiles'>
-    <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000/learningCourse/Vegetables'" value='Vegetables'>
-    <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000/learningCourse/Colors'" value='Colors'>
+    
+    <p>Welcome to Learning Course Based on Amazon Rekognition <%= title %></p>
+    <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000/learningCourse/Wildlife'" value='Wildlife' class="buttons">
+    <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000/learningCourse/Reptiles'" value='Reptiles' class="buttons">
+    <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000/learningCourse/Vegetables'" value='Vegetables' class="buttons">
+    <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000/learningCourse/Colors'" value='Colors' class="buttons">
+    </div>
   </body>
 </html>
