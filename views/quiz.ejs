@@ -9,14 +9,25 @@
  <p id="label"> </p>
 <form name="theFormName">
   <div id="radio">
-    <input type="radio" id="radio1" name="radiogrp" value = "10"><label for="radio1"><img src=<%= rightImageURL %> height="400" width="400" /> </label></input>
-    <input type="radio" id="radio2" name="radiogrp" value = "20"><label for="radio2"><img src=<%= wrongImageURL %> height="400" width="400" /> </label></input>
+    <input type="radio" id="radio1" name="radiogrp" value = <%=firstVal%>><label for="radio1"><img src=<%= firstImageURL %> height="400" width="400" /> </label></input>
+    <input type="radio" id="radio2" name="radiogrp" value = <%=secondVal%>><label for="radio2"><img src=<%= secondImageURL %>  height="400" width="400" /> </label></input>
     <br>
     <input type="button" value = "Check" onclick="getRadioValue('radiogrp')">
-  </div>
+    <input type=button onClick="location.href='<%=next_url%>'" value=Next class="buttons">  
+</div>
 </form>
-
-<script>
+<script type = "text/javascript">
+function calculateWrongImageURL(){
+        numberOfSlidesInEachCategory = 4;
+          var randomCategoryNum = numberOfSlidesInEachCategory;
+                do{
+                randomCategoryNum = Math.floor(Math.random() * numberOfSlidesInEachCategory) + 1;
+                }while(randomCategoryNum==categoryNum);
+                //console.log(randomCategoryNum);
+        var wrongImageURL = 'https://studentcourse.s3.amazonaws.com/Wildlife/Wildlife_quiz_'+randomCategoryNum+'.jpg';
+        console.log(wrongImageURL);
+        document.getElementById('wrongImageURL').src = wrongImageURL;
+}
  function getRadioValue(radiogrp) {
     var radios = theFormName.elements[radiogrp];
     window.rdValue;
@@ -29,13 +40,13 @@
                 else rdValue = 'noRadioChecked';
             }
             if (rdValue == '10') {
-                alert('That is right'); // or: console.log('10')
+               alert('Good job!! That is correct'); // or: console.log('10')
             }
             else if(rdValue == '20') {
-		alert('That is wrong'); 
+		alert('Oops! That is wrong'); 
             }
             else if (rdValue == 'noRadioChecked') {
-                alert('no radio checked');
+                alert('Please choose one option!');
             }
         }
 </script>
