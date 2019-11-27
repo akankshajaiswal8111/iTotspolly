@@ -24,7 +24,6 @@ function calculateWrongImageURL(){
                 randomCategoryNum = Math.floor(Math.random() * numberOfSlidesInEachCategory) + 1;
                 }while(randomCategoryNum==categoryNum);
                 //console.log(randomCategoryNum);
-        var wrongImageURL = 'https://studentcourse.s3.amazonaws.com/Wildlife/Wildlife_quiz_'+randomCategoryNum+'.jpg';
         console.log(wrongImageURL);
         document.getElementById('wrongImageURL').src = wrongImageURL;
 }
