@@ -65,7 +65,7 @@ textarea {
 }
 
 .divbody {
-	background-image: url("bckgrdImage.jpg");
+	background-image: url('bckgrdImage.jpg');
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-size: cover;
@@ -103,7 +103,18 @@ textarea {
 
 .logoutPos{
 
-	position:fixed;
+	position:absolute;
 	right:20px;
 	top:80px;
  }
+
+ .h1css{
+	font-family: 'Comic Sans MS', cursive, sans-serif;
+	color:darkblue;
+	position:absolute;
+	top:10px;
+	left:40%; 
+ }
+  
+
+ 
