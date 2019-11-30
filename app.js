@@ -11,6 +11,7 @@ var port = "3000"
 var domain = "ec2-34-207-163-214.compute-1.amazonaws.com"
 var protocol = "http"
 var home_url = protocol+"://"+domain+":"+port
+var S3_url = "https://studentcourse.s3.amazonaws.com"
 //var home_url = domain+":"+port
 
 console.log(home_url);
@@ -21,6 +22,13 @@ var usersRouter = require('./routes/users');
 var app = express();
 
 app.listen(3000, () => console.log('pollyCourse API listening on port 3000!'))
+
+AWS.config.update({
+  region: "us-east-1",
+  endpoint: "http://dynamodb.us-east-1.amazonaws.com/",
+  accessKeyId: "AKIAWYV5ST2BAHNUE4EF",
+  secretAccessKey: "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"
+});
 
 var docClient = new AWS.DynamoDB.DocumentClient();
 app.use(logger('dev'));
@@ -56,10 +64,11 @@ app.get('/learningCourse/:categories', function(req, res) {
 });
 
 
-app.get('/pollyCourse/:language/:id', function (req, res) {
+app.get('/pollyCourse/:language/:id', async function (req, res) {
   //console.log("here");
   var voice = 'Aditi';
   var url_parts = req.url.split('/').slice(2);
+  var voiceNum = url_parts[1];  
   var language = url_parts[0];
   if (language == 'hindi'){
     voice = 'Aditi';
@@ -76,7 +85,45 @@ app.get('/pollyCourse/:language/:id', function (req, res) {
   else if (language =='spanish'){
     voice = 'Enrique'
   }
-  var voiceNum = url_parts[1];
+  var itemCountParams = {
+    TableName : "pollyCourse_bkup",
+    KeyConditionExpression: "#id = :id",
+    ExpressionAttributeNames:{
+      "#id": "voice"
+
+    },
+    ExpressionAttributeValues: {
+      ":id": voice
+    }
+  };
+let voice_count = 0;
+let last_slide = false;
+try{
+data =  await docClient.query(itemCountParams).promise();
+	console.log("query done");
+
+	console.log(data);
+	voice_count = data.Items[0].voice_count;
+	if(voice_count == voiceNum){
+ 		 last_slide = true;
+	}
+	console.log(voice_count);
+}
+catch (err) {
+	console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+}
+console.log("outside");
+console.log("voice_count: "+voice_count+" voiceNum: "+voiceNum);
+//var voiceNum = url_parts[1];
+//var last_slide = false;
+//if(voice_count < 0 || voice_count < voiceNum){
+//	res.render('error');
+//}
+
+//if(voice_count > 0 && voice_count == voiceNum){
+//  last_slide = true;
+//}
+  //var voiceNum = url_parts[1];
   var phraseID = voice+'_Phrase'+voiceNum
   var params = {
     TableName : "pollyCourse",
@@ -89,24 +136,27 @@ app.get('/pollyCourse/:language/:id', function (req, res) {
       ":id": phraseID
     }
 };
+console.log(last_slide);
 docClient.query(params, function(err, data) {
     if (err) {
         console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
     } else {
         console.log("Query succeeded.");
-        console.log(data);
-        console.log(data.Items[0].text);
+       // console.log(data);
+       // console.log(data.Items[0]);
         var nextSlide = parseInt(voiceNum)+1;
         var previousSlide = parseInt(voiceNum)-1;
-        console.log(previousSlide)
+        //console.log(data.Count);
+	//console.log(data.ScannedCount);
 //        var previous_url = home_url+'/pollyCourse/'+language+'/'+previousSlide;
- //       res.render('slide', { title: 'Course', text: data.Items[0].text, previous_url: previous_url, audio_url:data.Items[0].url});
-        var next_url = home_url+'/pollyCourse/'+language+'/'+nextSlide;
-        res.render('slide', { title: 'Course', text: data.Items[0].text, next_url: next_url, audio_url:data.Items[0].url});
+ //       res.render('slide', { title: 'Course', text: data.Items[0].text, previous_url: previous_url, audio_url:data.Items[0].url})
+	var next_url = home_url+'/pollyCourse/'+language+'/'+nextSlide;
+        console.log(last_slide); 
+	res.render('slide', { title: 'Course', text: data.Items[0].text, next_url: next_url, audio_url:data.Items[0].url, last_slide: last_slide});
         
-        if(data.Items[0].text.LastEvaluatedKey = "undefined") {
-          res.render('finish', { title: 'Course Completed'})
-        }
+//        if(data.Items[0].text.LastEvaluatedKey = "undefined") {
+//          res.render('finish', { title: 'Course Completed'})
+//        }
         //res.send(data.Items)
         // data.Items.forEach(function(pollyCourse) {
         //   console.log(pollyCourse.id, pollyCourse.voice, pollyCourse.text);
@@ -148,7 +198,7 @@ docClient.query(params, function(err, data) {
 //        var previous_url = home_url+'/pollyCourse/'+language+'/'+previousSlide;
  //       res.render('slide', { title: 'Course', text: data.Items[0].text, previous_url: previous_url, audio_url:data.Items[0].url});
         var next_url = home_url+'/learningCourse/'+category+'/'+nextSlide;
-        res.render('learningslide', { title: 'Course', text: data.Items[0].text, next_url: next_url, S3url:data.Items[0].S3url});
+        res.render('learningslide', { title: 'Course', id: categoryNum, folder: category, text: data.Items[0].text, next_url: next_url, S3url:data.Items[0].S3url});
 
 //        if(data.Items[0].text.LastEvaluatedKey = "undefined") {
 //          res.render('finish', { title: 'Course Completed'})
@@ -171,11 +221,12 @@ app.get('/learningCourse/:categories/quiz/:id', function (req, res) {
   	randomCategoryNum = Math.floor(Math.random() * numberOfSlidesInEachCategory) + 1;
   }while(randomCategoryNum==categoryNum);
   console.log(randomCategoryNum);
-  
+  var wrongImageURL = S3_url+'/'+category+'/'+category+'_quiz_'+randomCategoryNum+'.jpg';
+  console.log(wrongImageURL);
   var image1ID = category+'/'+category+'_quiz_'+categoryNum
-  var image2ID = category+'/'+category+'_quiz_'+randomCategoryNum
+  //var image2ID = category+'/'+category+'_quiz_'+randomCategoryNum
   console.log(image1ID);
-  console.log(image2ID);
+  //console.log(image2ID);
   var params1 = {
     TableName : "courseImages",
     KeyConditionExpression: "#id = :id",
@@ -187,59 +238,74 @@ app.get('/learningCourse/:categories/quiz/:id', function (req, res) {
       ":id": image1ID
     }
 };
-  var params2 = {
-    TableName : "courseImages",
-    KeyConditionExpression: "#id = :id",
-    ExpressionAttributeNames:{
-      "#id": "filename"
+//  var params2 = {
+//    TableName : "courseImages",
+//    KeyConditionExpression: "#id = :id",
+//    ExpressionAttributeNames:{
+//      "#id": "filename"
 
-    },
-    ExpressionAttributeValues: {
-      ":id": image2ID
-    }
-};
+//    },
+//    ExpressionAttributeValues: {
+//      ":id": image2ID
+//    }
+//};
 
 docClient.query(params1, function(err, data) {
     if (err) {
         console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
     } else {
-    	var wrongImageData = function getWrongImageData(params, docClient){
-        docClient.query(params, function(err, data) {
-          if (err) {
-          console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
-          } else {
-              console.log('here');
-              var wrongImageURL = data.Items[0].S3url;
-              var wrongImageText = data.Items[0].text;
-              console.log(wrongImageURL);
-              console.log(wrongImageText);
-              var wrongImageData1 = {wrongImageURL: wrongImageURL, wrongImageText: wrongImageText};
-              console.log(wrongImageData);
-              return wrongImageData1;
-              }
-          });
+    	//var wrongImageData = function getWrongImageData(params, docClient){
+        //docClient.query(params, function(err, data) {
+         // if (err) {
+          //console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+          //} else {
+            //  console.log('here');
+             // var wrongImageURL = data.Items[0].S3url;
+              //var wrongImageText = data.Items[0].text;
+              //console.log(wrongImageURL);
+              //console.log(wrongImageText);
+             // var wrongImageData1 = {wrongImageURL: wrongImageURL, wrongImageText: wrongImageText};
+              //console.log(wrongImageData);
+              //return wrongImageData1;
+              //}
+          //});
           var nextSlide = parseInt(categoryNum)+1;
-          var next_url = home_url+'/learningCourse/'+category+'/quiz_/'+nextSlide;
+          var next_url = home_url+'/learningCourse/'+category+'/quiz/'+nextSlide;
           var rightImageURL = data.Items[0].S3url;
           console.log(rightImageURL);
-	  console.log(wrongImageData.wrongImageURL);
+	 // console.log(wrongImageURL);
           var rightImageText = data.Items[0].text;
           var rightImageLabel = data.Items[0].labels[0];
           console.log(rightImageLabel);
-    
+   	  var imageFlag = Math.floor(Math.random() * 2) + 1;
+          if (imageFlag == 1){
+                var firstImage = rightImageURL;
+                var secondImage = wrongImageURL;
+                var firstVal = 10;
+                var secondVal = 20;
+          }
+          else if (imageFlag == 2){
+                var firstImage = wrongImageURL;
+                var secondImage = rightImageURL;
+                var firstVal = 20;
+                var secondVal = 10;
+          } 
 //});
           res.render('quiz', 
 	        {	
 		title: 'quiz', 
 		quiz_label_right: rightImageLabel, 
-		rightImageURL: rightImageURL, 
-		wrongImageURL: wrongImageData.wrongImageURL, 
+		firstImageURL: firstImage,
+		firstVal: firstVal, 
+		secondImageURL: secondImage,
+		secondVal: secondVal, 
 		rightImageText: rightImageText, 
-		wrongImageText: wrongImageData.wrongImageText, 
+		//wrongImageText: wrongImageData.wrongImageText, 
+		randomCategoryNum : randomCategoryNum,
 		next_url: next_url
         	});
 	
-}
+	}
 
 });
 });
