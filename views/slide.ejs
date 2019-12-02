@@ -15,8 +15,19 @@
     <audio controls>
         <source src = "<%=audio_url%>" type = "audio/mpeg">
     </audio>
-     <input type=button onClick="location.href='http://ec2-34-207-163-214.compute-1.amazonaws.com:3000'" value=Home class="buttons">
-     <input type=button onClick="location.href='<%=next_url%>'" value=Next class="buttons">
+     <input type=button onClick="location.href='<%=server_url%>'" value=Home class="buttons">
+     <input type=button onClick="location.href='<%=next_url%>'" value=Next id="next">
+     <script language="javascript">
+        hide = <%=last_slide%>;
+        console.log(hide);
+        function hideNextButton(hide){
+                if (hide==true){
+                        console.log("inside");
+                        document.getElementById("next").style.visibility="hidden";
+                }
+        }
+        hideNextButton(hide);
+    </script>
     </div>
     </body>
 </html>
