@@ -5,10 +5,10 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var AWS = require("aws-sdk");
 var bodyParser = require('body-parser');
-//var config = require('./config');
+var config = require('./config.js');
 var availableLanguages = ['hindi', 'french', 'spanish', 'english']
 var port = "3000"
-var domain = "ec2-34-207-163-214.compute-1.amazonaws.com"
+var domain = config.server
 var protocol = "http"
 var home_url = protocol+"://"+domain+":"+port
 var S3_url = "https://studentcourse.s3.amazonaws.com"
@@ -16,8 +16,8 @@ var S3_url = "https://studentcourse.s3.amazonaws.com"
 
 console.log(home_url);
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+//var indexRouter = require('./routes/index');
+//var usersRouter = require('./routes/users');
 
 var app = express();
 
@@ -26,8 +26,8 @@ app.listen(3000, () => console.log('pollyCourse API listening on port 3000!'))
 AWS.config.update({
   region: "us-east-1",
   endpoint: "http://dynamodb.us-east-1.amazonaws.com/",
-  accessKeyId: "AKIAWYV5ST2BAHNUE4EF",
-  secretAccessKey: "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"
+  accessKeyId: config.key, 
+  secretAccessKey: config.secret
 });
 
 var docClient = new AWS.DynamoDB.DocumentClient();
@@ -37,13 +37,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.set('view engine', 'jade');
 
+app.get('/', function(req, res, next) {
+  res.render('index', { title: 'Welcome to iTots', server_url: home_url });
+});
+
 
 app.get('/pollyCourse', function (req, res) {
-  res.render('pollyHome', {title: 'Home'});
+  res.render('pollyHome', {title: 'Home', server_url: home_url});
 });
 
 app.get('/learningCourse', function (req, res) {
-  res.render('learningHome', {title: 'Learn'});
+  res.render('learningHome', {title: 'Learn', server_url: home_url});
 });
 
 app.get('/pollyCourse/:language', function(req, res){
@@ -51,7 +55,7 @@ app.get('/pollyCourse/:language', function(req, res){
   console.log(lang);
   var next_url = home_url+'/pollyCourse/'+lang+'/1';
   console.log(next_url); 
-  res.render('languageHome', {title: 'Course', lang: lang, url: next_url})
+  res.render('languageHome', {title: 'Course', server_url: home_url, lang: lang, url: next_url})
   
 });
 
@@ -60,7 +64,7 @@ app.get('/learningCourse/:categories', function(req, res) {
   console.log(category)
   var next_url = home_url+'/learningCourse/'+category+'/1';
   console.log(next_url);
-  res.render('categoryHome', {title: 'Learning Course', category: category, url: next_url})
+  res.render('categoryHome', {title: 'Learning Course', server_url: home_url, category: category, url: next_url})
 });
 
 
@@ -152,15 +156,8 @@ docClient.query(params, function(err, data) {
  //       res.render('slide', { title: 'Course', text: data.Items[0].text, previous_url: previous_url, audio_url:data.Items[0].url})
 	var next_url = home_url+'/pollyCourse/'+language+'/'+nextSlide;
         console.log(last_slide); 
-	res.render('slide', { title: 'Course', text: data.Items[0].text, next_url: next_url, audio_url:data.Items[0].url, last_slide: last_slide});
+	res.render('slide', { title: 'Course', text: data.Items[0].text, server_url: home_url, next_url: next_url, audio_url:data.Items[0].url, last_slide: last_slide});
         
-//        if(data.Items[0].text.LastEvaluatedKey = "undefined") {
-//          res.render('finish', { title: 'Course Completed'})
-//        }
-        //res.send(data.Items)
-        // data.Items.forEach(function(pollyCourse) {
-        //   console.log(pollyCourse.id, pollyCourse.voice, pollyCourse.text);
-        // });
     }
 });
 });
@@ -198,7 +195,7 @@ docClient.query(params, function(err, data) {
 //        var previous_url = home_url+'/pollyCourse/'+language+'/'+previousSlide;
  //       res.render('slide', { title: 'Course', text: data.Items[0].text, previous_url: previous_url, audio_url:data.Items[0].url});
         var next_url = home_url+'/learningCourse/'+category+'/'+nextSlide;
-        res.render('learningslide', { title: 'Course', id: categoryNum, folder: category, text: data.Items[0].text, next_url: next_url, S3url:data.Items[0].S3url});
+        res.render('learningslide', { title: 'Course', server_url: home_url, id: categoryNum, folder: category, text: data.Items[0].text, next_url: next_url, S3url:data.Items[0].S3url});
 
 //        if(data.Items[0].text.LastEvaluatedKey = "undefined") {
 //          res.render('finish', { title: 'Course Completed'})
@@ -298,11 +295,14 @@ docClient.query(params1, function(err, data) {
 		firstImageURL: firstImage,
 		firstVal: firstVal, 
 		secondImageURL: secondImage,
-		secondVal: secondVal, 
+		secondVal: secondVal,
+		server_url: home_url, 
 		rightImageText: rightImageText, 
 		//wrongImageText: wrongImageData.wrongImageText, 
 		randomCategoryNum : randomCategoryNum,
-		next_url: next_url
+		next_url: next_url,
+                id: categoryNum, 
+		folder: category
         	});
 	
 	}
@@ -320,8 +320,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+//app.use('/', indexRouter);
+//app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
