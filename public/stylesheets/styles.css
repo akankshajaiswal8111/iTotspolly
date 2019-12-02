@@ -95,6 +95,12 @@ textarea {
 	left:30%; 
 }
 
+.quizmargin {
+	position:absolute;
+	top:120px;
+	left:15%; 
+}
+
 .pollymargin {
 	position:absolute;
 	top:210px;

@@ -61,10 +61,10 @@ if(countFiles == idNum) //put value of ur slidenumber instead of 4
     <h1>Quiz</h1>
   </div>
   <div class="textmargin">
- <p><%=quiz_label_right %></p>
+ <h2>Choose the picture with <%=quiz_label_right %></h2>
 </div>
  <p id="label"> </p>
- <div class="imagemargin">
+ <div class="quizmargin">
 <form name="theFormName">
   <div id="radio">
     <input type="radio" id="radio1" name="radiogrp" value = <%=firstVal%>><label for="radio1"><img src=<%= firstImageURL %> height="400" width="400" /> </label></input>
@@ -98,7 +98,7 @@ function calculateWrongImageURL(){
                 else rdValue = 'noRadioChecked';
             }
             if (rdValue == '10') {
-               alert('Good job!! That is correct'); // or: console.log('10')
+               alert('Good job! That is correct.'); // or: console.log('10')
             }
             else if(rdValue == '20') {
 		alert('Oops! That is wrong'); 
