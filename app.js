@@ -38,7 +38,7 @@ app.use(cookieParser());
 app.set('view engine', 'jade');
 
 app.get('/', function(req, res, next) {
-  res.render('index', { title: 'Welcome to iTots', server_url: home_url });
+  res.render('index', { title: 'Welcome Tots!', server_url: home_url });
 });
 
 
