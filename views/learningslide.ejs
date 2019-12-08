@@ -13,6 +13,8 @@
       var bucketRegion = 'us-east-1';
       AWS.config.update({
         region: bucketRegion,
+	accessKeyId : '',
+        secretAccessKey : ''
        });
       var s3 = new AWS.S3({
         params: {Bucket: bucketName}

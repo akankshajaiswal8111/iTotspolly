@@ -13,6 +13,8 @@
       var bucketRegion = 'us-east-1';
       AWS.config.update({
         region: bucketRegion,
+        accessKeyId : '',
+        secretAccessKey : ''
        });
       var s3 = new AWS.S3({
         params: {Bucket: bucketName}
@@ -72,6 +74,7 @@ if(countFiles == idNum) //put value of ur slidenumber instead of 4
     <br>
     <input type="button" value = "Check" onclick="getRadioValue('radiogrp')" class="buttons">
     <input type=button onClick="location.href='<%=next_url%>'" value=Next class="buttons" id="next">  
+    <input type=button onClick="location.href='<%=server_url%>'" value=Home class="buttons">
 </div>
 </form>
 </div>
