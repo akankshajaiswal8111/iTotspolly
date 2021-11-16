@@ -10,7 +10,7 @@
     "read-data": "cd dynamodb && node readDataTest.js && cd .."
   },
   "dependencies": {
-    "aws-sdk": "^2.575.0",
+    "aws-sdk": "^2.814.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
